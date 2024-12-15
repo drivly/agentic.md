@@ -80,26 +80,26 @@ metadata:
     })
 
     // Verify different value types
-    expect(result.frontmatter.model.temperature).toBe(0.7) // number
-    expect(result.frontmatter.model.flags.stream).toBe(true) // boolean
-    expect(result.frontmatter.model.flags.cache).toBe(false) // boolean
-    expect(result.frontmatter.metadata.tags).toEqual(['ai', 'agent', 'test']) // array
-    expect(result.frontmatter.metadata.created).toBe('2024-01-15') // date string
+    expect(result.frontmatter.model!.temperature).toBe(0.7) // number
+    expect(result.frontmatter.model!.flags!.stream).toBe(true) // boolean
+    expect(result.frontmatter.model!.flags!.cache).toBe(false) // boolean
+    expect(result.frontmatter.metadata!.tags).toEqual(['ai', 'agent', 'test']) // array
+    expect(result.frontmatter.metadata!.created).toBe('2024-01-15') // date string
 
     // Verify nested objects and arrays
-    expect(result.frontmatter.prompt.history).toHaveLength(2)
-    expect(result.frontmatter.prompt.history[0]).toEqual({
+    expect(result.frontmatter.prompt!.history).toHaveLength(2)
+    expect(result.frontmatter.prompt!.history![0]).toEqual({
       role: 'user',
       content: 'Previous message',
       timestamp: 1234567890
     })
 
     // Verify deeply nested numeric values
-    expect(result.frontmatter.model.settings.maxTokens).toBe(1000)
-    expect(result.frontmatter.model.settings.frequencyPenalty).toBe(1.2)
+    expect(result.frontmatter.model!.settings!.maxTokens).toBe(1000)
+    expect(result.frontmatter.model!.settings!.frequencyPenalty).toBe(1.2)
 
     // Verify complex nested objects with mixed types
-    expect(result.frontmatter.capabilities[0]).toEqual({
+    expect(result.frontmatter.capabilities![0]).toEqual({
       name: 'search',
       enabled: true,
       config: {
