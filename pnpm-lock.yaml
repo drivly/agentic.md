@@ -12,7 +12,7 @@ importers:
         specifier: ^2.2.31
         version: 2.2.37(react@18.3.1)(solid-js@1.9.3)(svelte@4.2.19)(vue@3.5.13(typescript@5.7.2))
       react:
-        specifier: ^18.2.0
+        specifier: ^18.3.1
         version: 18.3.1
       yaml:
         specifier: ^2.3.4
@@ -34,7 +34,7 @@ importers:
         specifier: ^22.10.2
         version: 22.10.2
       '@types/react':
-        specifier: ^18.2.47
+        specifier: ^18.3.16
         version: 18.3.16
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.18.1
