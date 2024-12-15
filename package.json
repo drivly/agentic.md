@@ -1,0 +1,37 @@
+{
+  "name": "agentic.md",
+  "version": "0.1.0",
+  "packageManager": "pnpm@8.13.1",
+  "type": "module",
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly --outDir dist/types",
+    "test": "vitest",
+    "lint": "eslint . --ext ts,tsx",
+    "type-check": "tsc --noEmit",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "ai": "^2.2.31",
+    "react": "^18.3.1",
+    "yaml": "^2.3.4"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^14.3.1",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.16",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "husky": "^8.0.3",
+    "jsdom": "^25.0.1",
+    "semantic-release": "^22.0.12",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "vitest": "^1.6.0"
+  }
+}
