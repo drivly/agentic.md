@@ -1,3 +1,4 @@
+import 'react'
 import type { ReactNode } from 'react'
 
 export interface CapabilityProps {
