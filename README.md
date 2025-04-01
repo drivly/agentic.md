@@ -36,7 +36,6 @@ stateDiagram-v2
 
 ```typescript
 import { createAgentFromMarkdown } from 'agentic.md'
-import { Agent } from 'agents'
 import fs from 'fs'
 
 // Load markdown file
@@ -52,6 +51,51 @@ customerSupportAgent.onMessageReceived({
 })
 ```
 
+## Generate XState Machines from Mermaid Diagrams
+
+```typescript
+import { createWorkflowFromMarkdown } from 'agentic.md'
+import { interpret } from 'xstate'
+import fs from 'fs'
+
+// Load markdown with Mermaid state diagram
+const markdown = fs.readFileSync('./support-workflow.md', 'utf-8')
+
+// Generate XState machine from Mermaid diagram
+const machine = createWorkflowFromMarkdown(markdown)
+
+// The generated machine structure:
+// {
+//   id: 'workflow',
+//   initial: 'Idle',
+//   states: {
+//     Idle: {
+//       on: { onMessageReceived: 'ProcessingInquiry' }
+//     },
+//     ProcessingInquiry: {
+//       on: {
+//         issueIdentified: 'ResolvingIssue',
+//         complexIssueDetected: 'EscalatingIssue'
+//       }
+//     },
+//     ResolvingIssue: {
+//       on: { issueResolved: 'Idle' }
+//     },
+//     EscalatingIssue: {
+//       on: { escalationCompleted: 'Idle' }
+//     }
+//   }
+// }
+
+// Use the machine with XState
+const service = interpret(machine)
+  .onTransition(state => console.log(state.value))
+  .start()
+
+// Send events to the state machine
+service.send('onMessageReceived')
+```
+
 ## Define a Workflow in Markdown
 
 ```md
@@ -63,66 +107,62 @@ Handles the end-to-end order processing flow
 ## Workflow
 
 ```mermaid
-flowchart TD
-    A[Order Received] --> B{Inventory Check}
-    B -->|In Stock| C[Process Payment]
-    B -->|Out of Stock| D[Notify Customer]
-    C -->|Payment Successful| E[Ship Order]
-    C -->|Payment Failed| F[Cancel Order]
-    E --> G[Order Completed]
-    F --> H[Order Cancelled]
-    D --> H
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Processing: ORDER_RECEIVED
+    Processing --> Completed: COMPLETED
+    Processing --> Failed: FAILED
+    Completed --> [*]
+    Failed --> [*]
 ```
 
-## Generate and Use a Workflow
+## Compose Multiple Workflows
 
 ```typescript
-import { createWorkflowFromMarkdown } from 'agentic.md'
-import { interpret } from 'xstate'
+import { createWorkflowFromMarkdown, composeWorkflows } from 'agentic.md'
+import fs from 'fs'
 
-// Create workflow from markdown
-const orderProcessingWorkflow = createWorkflowFromMarkdown('./order-processing.md')
+// Load multiple workflow definitions
+const orderWorkflow = createWorkflowFromMarkdown(
+  fs.readFileSync('./order-workflow.md', 'utf-8')
+)
 
-// Interpret and start the workflow
-const orderService = interpret(orderProcessingWorkflow)
-  .onTransition(state => console.log(state.value))
-  .start()
+const paymentWorkflow = createWorkflowFromMarkdown(
+  fs.readFileSync('./payment-workflow.md', 'utf-8')
+)
 
-// Send events to the workflow
-orderService.send({ type: 'ORDER_RECEIVED', order: { id: '12345', items: [...] } })
+// Compose workflows into a single state machine
+const composedWorkflow = composeWorkflows({
+  orders: orderWorkflow,
+  payments: paymentWorkflow
+})
+
+// Use the composed workflow
+const service = interpret(composedWorkflow).start()
 ```
 
 ## Integration with Drivly AI Ecosystem
 
 ```typescript
 import { createAgentFromMarkdown } from 'agentic.md'
-import { AI } from 'workflows.do'
+import { AI } from 'ai'
 
 // Create agent from markdown
 const agent = createAgentFromMarkdown('./agent.md')
 
-// Use with workflows.do
+// Use with AI
 const workflow = AI({
-  processCustomerInquiry: async ({ ai, api, event }) => {
+  processCustomerInquiry: async ({ ai, event }) => {
     const response = await agent.processInquiry(event.message)
     return response
   }
 })
 ```
 
-## Supported Mermaid Diagram Types
-
-- **State Diagrams**: Define agent states and transitions
-- **Flowcharts**: Model decision trees and process flows
-- **Sequence Diagrams**: Specify interactions between agents and systems
-- **Class Diagrams**: Define agent properties and relationships
-- **Entity Relationship Diagrams**: Model complex data relationships
-
 ## Features
 
 - **Markdown-First Development**: Define agents and workflows in plain Markdown
-- **Mermaid Diagram Integration**: Visualize and generate from Mermaid diagrams
-- **XState State Machines**: Generate robust state machines from diagrams
+- **Mermaid → XState**: Generate state machines directly from Mermaid diagrams
 - **AI Agent Generation**: Create autonomous agents from Markdown definitions
 - **Composable Architecture**: Build complex systems from simple components
 - **TypeScript Support**: Full type safety and autocompletion

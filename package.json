@@ -34,12 +34,12 @@
   "homepage": "https://github.com/drivly/agentic.md#readme",
   "dependencies": {
     "ai": "^2.2.31",
-    "agents": "^1.0.0",
     "remark": "^15.0.1",
     "remark-parse": "^11.0.0",
     "remark-mermaid": "^0.2.0",
     "unified": "^11.0.4",
-    "xstate": "^5.5.1"
+    "xstate": "^5.5.1",
+    "mermaid": "^10.8.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
