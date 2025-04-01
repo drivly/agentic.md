@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { createWorkflowFromMarkdown, extractMermaidDiagram, parseMermaidStateDiagram } from '../workflow';
 
 describe('Workflow Creation', () => {
