@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      agents.do:
+        specifier: ^0.0.1
+        version: 0.0.1
       ai:
         specifier: ^2.2.34
         version: 2.2.37(react@18.3.1)(solid-js@1.9.5)(svelte@4.2.19)(vue@3.5.13(typescript@5.8.2))
@@ -552,6 +555,9 @@ packages:
     resolution: {integrity: sha512-salcGninV0nPrwpGNn4VTXBb1SOuXQBiqbrNXoeizJsHrsL6ERFM2Ne3JUSBWRE6aeNJI2ROP/WEEIDUiDe3cg==}
     engines: {node: '>= 4.0.0'}
 
+  agents.do@0.0.1:
+    resolution: {integrity: sha512-OpmROF5FT4rn1l3QjyWVCtNoNjeQF78DHgHuc6ckKnRE0XLdsJt2ET6o3RCMoJ2SxUWF9NrebfVXUTcAXCnMeA==}
+
   ai@2.2.37:
     resolution: {integrity: sha512-JIYm5N1muGVqBqWnvkt29FmXhESoO5TcDxw74OE41SsM+uIou6NPDDs0XWb/ABcd1gmp6k5zym64KWMPM2xm0A==}
     engines: {node: '>=14.6'}
@@ -588,6 +594,9 @@ packages:
   ansi-styles@5.2.0:
     resolution: {integrity: sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==}
     engines: {node: '>=10'}
+
+  apis.do@0.0.1:
+    resolution: {integrity: sha512-VghuOjKF/ElhSdqvJT2PIPGJ+AVdrX+rQkZuUCPTP9YzyvwxIaWDqKnr5cZxAlz8PXDUcmSGOXZSK5aPI0iwqA==}
 
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
@@ -2479,6 +2488,10 @@ snapshots:
     dependencies:
       es6-promisify: 5.0.0
 
+  agents.do@0.0.1:
+    dependencies:
+      apis.do: 0.0.1
+
   ai@2.2.37(react@18.3.1)(solid-js@1.9.5)(svelte@4.2.19)(vue@3.5.13(typescript@5.8.2)):
     dependencies:
       eventsource-parser: 1.0.0
@@ -2512,6 +2525,8 @@ snapshots:
       color-convert: 2.0.1
 
   ansi-styles@5.2.0: {}
+
+  apis.do@0.0.1: {}
 
   argparse@2.0.1: {}
 
