@@ -2,6 +2,7 @@
   "name": "agentic.md",
   "version": "0.1.0",
   "description": "Build AI Agents and Agentic Workflows in Markdown",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -35,21 +36,22 @@
   },
   "homepage": "https://github.com/drivly/agentic.md#readme",
   "dependencies": {
+    "agents.do": "^0.0.1",
     "ai": "^2.2.34",
+    "mermaid": "^10.9.0",
     "remark": "^15.0.1",
-    "remark-parse": "^11.0.0",
     "remark-mermaid": "^0.2.0",
+    "remark-parse": "^11.0.0",
     "unified": "^11.0.4",
-    "xstate": "^5.9.1",
-    "mermaid": "^10.9.0"
+    "xstate": "^5.9.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.30",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
     "@typescript-eslint/parser": "^7.3.1",
+    "@vitest/coverage-v8": "^1.3.1",
     "eslint": "^8.57.0",
     "typescript": "^5.4.3",
-    "vitest": "^1.3.1",
-    "@vitest/coverage-v8": "^1.3.1"
+    "vitest": "^1.3.1"
   }
 }
