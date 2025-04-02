@@ -48,16 +48,15 @@ export async function createAgentFromMarkdown(markdown: string): Promise<any> {
     
     @unstable_callable({ description: 'Send a message to the agent' })
     async chat(message: string) {
-      console.log(`Agent ${this.state.name} received message:`, message);
+      const currentState = this.state;
+      console.log(`Agent ${currentState.name} received message:`, message);
       
-      // });
-      
-      const response = `I am ${this.state.name}, processing your request: "${message}"`;
+      const response = `I am ${currentState.name}, processing your request: "${message}"`;
       
       this.setState({
-        ...this.state,
+        ...currentState,
         conversations: [
-          ...this.state.conversations,
+          ...currentState.conversations,
           { message, response, timestamp: new Date().toISOString() }
         ]
       });

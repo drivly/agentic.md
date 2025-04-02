@@ -2,9 +2,9 @@
  * agentic.md - Build AI Agents and Agentic Workflows in Markdown
  */
 
-export { createAgentFromMarkdown } from './agent';
-export { createWorkflowFromMarkdown } from './workflow';
-export { defineAgentTemplate } from './templates';
-export { composeWorkflows } from './composition';
+export { createAgentFromMarkdown } from './agent.js';
+export { createWorkflowFromMarkdown } from './workflow.js';
+export { defineAgentTemplate } from './templates.js';
+export { composeWorkflows } from './composition.js';
 
-export * from './types';
+export * from './types.js';

@@ -2,7 +2,7 @@
  * Workflow creation from Markdown
  */
 
-import { WorkflowDefinition } from './types';
+import { WorkflowDefinition } from './types.js';
 
 /**
  * Extracts Mermaid diagram content from markdown
