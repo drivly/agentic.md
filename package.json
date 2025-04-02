@@ -1,6 +1,6 @@
 {
   "name": "agentic.md",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Build AI Agents and Agentic Workflows in Markdown",
   "type": "module",
   "main": "dist/index.js",
