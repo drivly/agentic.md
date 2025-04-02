@@ -2,7 +2,7 @@
  * Agent templates
  */
 
-import { AgentTemplate } from './types';
+import { AgentTemplate } from './types.js';
 
 /**
  * Defines a reusable agent template
