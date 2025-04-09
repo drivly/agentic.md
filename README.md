@@ -32,6 +32,17 @@ stateDiagram-v2
     EscalatingIssue --> Idle: escalationCompleted
 ```
 
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> ProcessingInquiry: onMessageReceived
+    ProcessingInquiry --> ResolvingIssue: issueIdentified
+    ProcessingInquiry --> EscalatingIssue: complexIssueDetected
+    ResolvingIssue --> Idle: issueResolved
+    EscalatingIssue --> Idle: escalationCompleted
+```
+
 ## Generate and Use an Agent
 
 ```typescript
