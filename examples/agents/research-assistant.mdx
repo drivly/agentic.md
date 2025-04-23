@@ -1,0 +1,405 @@
+---
+$type: Agent
+$version: 1.0.0
+title: Research Assistant
+description: Conduct multi-source research and summarize information on various topics with this autonomous research agent
+model:
+  name: openai/gpt-4
+  temperature: 0.3
+  maxTokens: 4000
+tools:
+  - name: web_search
+    enabled: true
+    config:
+      provider: "google"
+      resultsPerQuery: 5
+  - name: academic_databases
+    enabled: true
+    config:
+      sources: ["arxiv", "pubmed", "semantic_scholar"]
+      maxResults: 10
+  - name: wikipedia
+    enabled: true
+    config:
+      language: "en"
+      includeReferences: true
+  - name: notion
+    enabled: true
+    config:
+      workspace: "${NOTION_WORKSPACE_ID}"
+  - name: email
+    enabled: true
+    config:
+      provider: "smtp"
+      from: "research-assistant@example.com"
+capabilities:
+  - name: multiSourceResearch
+    enabled: true
+    config:
+      maxSources: 20
+      crossReferenceEnabled: true
+  - name: citationGeneration
+    enabled: true
+    config:
+      defaultStyle: "APA"
+      includeURLs: true
+  - name: reportGeneration
+    enabled: true
+    config:
+      formats: ["markdown", "pdf", "html"]
+      includeExecutiveSummary: true
+prompt:
+  system: |
+    You are a thorough and detail-oriented research assistant. Your responsibilities include:
+    - Researching topics across multiple sources including web, academic databases, and Wikipedia
+    - Extracting and summarizing key information in a clear, organized manner
+    - Generating proper citations for all information sources
+    - Creating comprehensive reports with accurate information
+    - Identifying gaps in research and suggesting additional areas to explore
+    
+    Always verify information across multiple sources when possible. Maintain academic integrity
+    by properly attributing information to its original sources. When information is contradictory
+    across sources, present the different perspectives and note the contradictions.
+  user: |
+    Research topic: {{topic}}
+    Research depth: {{depth}}
+    Output format: {{format}}
+---
+
+# Research Assistant
+
+This agent conducts in-depth research across multiple sources and summarizes information on various topics. It can extract key points, generate citations, create comprehensive reports, and share findings via email or save them to knowledge management systems.
+
+<Capability name="Multi-Source Research" description="Conduct research across multiple sources and databases">
+  The Research Assistant can gather information from diverse sources including:
+  
+  - Web search results from Google, Bing, and other search engines
+  - Academic papers from arXiv, PubMed, and Semantic Scholar
+  - Wikipedia articles and references
+  - Internal knowledge bases and Notion workspaces
+  - Previously saved research and reports
+  
+  The agent cross-references information across sources to verify accuracy and identify consensus or contradictions.
+</Capability>
+
+<Capability name="Citation Generation" description="Generate properly formatted citations for all sources">
+  The agent automatically creates citations for all sources used in research:
+  
+  - Supports multiple citation styles (APA, MLA, Chicago, IEEE)
+  - Includes all necessary metadata (authors, publication date, title, etc.)
+  - Generates in-text citations and reference lists
+  - Properly formats URLs and DOIs for digital sources
+  - Maintains citation consistency throughout documents
+</Capability>
+
+<Capability name="Report Generation" description="Create comprehensive research reports">
+  The Research Assistant can produce well-structured reports with:
+  
+  - Executive summaries highlighting key findings
+  - Detailed analysis organized by themes or topics
+  - Data visualizations when appropriate
+  - Complete reference lists with proper citations
+  - Appendices with additional information or raw data
+  - Multiple output formats (Markdown, PDF, HTML)
+</Capability>
+
+## Agent Logic
+
+```javascript
+// Handle research request
+export async function conductResearch(topic, depth = 'standard', format = 'report', context) {
+  // Track research progress
+  context.setState({ status: 'researching', progress: 0, topic });
+  
+  // Step 1: Initial web search to gather background information
+  const webResults = await context.tools.web_search.search({
+    query: topic,
+    limit: depth === 'deep' ? 10 : 5
+  });
+  
+  context.setState({ progress: 20 });
+  
+  // Step 2: Academic database search for scholarly information
+  const academicResults = await context.tools.academic_databases.search({
+    query: topic,
+    recent: true,
+    limit: depth === 'deep' ? 8 : 3
+  });
+  
+  context.setState({ progress: 40 });
+  
+  // Step 3: Wikipedia for established knowledge
+  const wikiResults = await context.tools.wikipedia.search({
+    query: topic,
+    sections: true
+  });
+  
+  context.setState({ progress: 60 });
+  
+  // Step 4: Compile all research sources
+  const allSources = [
+    ...webResults.map(r => ({ ...r, type: 'web' })),
+    ...academicResults.map(r => ({ ...r, type: 'academic' })),
+    ...wikiResults.map(r => ({ ...r, type: 'wikipedia' }))
+  ];
+  
+  // Step 5: Analyze and extract key information
+  const analysis = await context.ai.analyzeResearchData({
+    sources: allSources,
+    topic,
+    depth
+  });
+  
+  context.setState({ progress: 80 });
+  
+  // Step 6: Generate citations for all sources used
+  const citations = await generateCitations({
+    sources: allSources.filter(s => analysis.usedSourceIds.includes(s.id)),
+    style: 'APA',
+    context
+  });
+  
+  // Step 7: Create the final report
+  const reportContent = await generateResearchReport({
+    topic,
+    analysis,
+    citations,
+    format,
+    context
+  });
+  
+  context.setState({ status: 'completed', progress: 100 });
+  
+  // Return the research results
+  return {
+    title: `Research on: ${topic}`,
+    content: reportContent,
+    citations,
+    sources: allSources.filter(s => analysis.usedSourceIds.includes(s.id)),
+    metadata: {
+      topic,
+      depth,
+      format,
+      completedAt: new Date().toISOString()
+    }
+  };
+}
+
+// Generate citations for sources
+export async function generateCitations({ sources, style = 'APA', context }) {
+  // Format each source according to the specified citation style
+  const formattedCitations = await Promise.all(
+    sources.map(async (source) => {
+      let citation = '';
+      
+      if (source.type === 'academic') {
+        // Format academic citation (journal article, conference paper, etc.)
+        citation = await formatAcademicCitation(source, style);
+      } else if (source.type === 'web') {
+        // Format web citation
+        citation = await formatWebCitation(source, style);
+      } else if (source.type === 'wikipedia') {
+        // Format Wikipedia citation
+        citation = await formatWikipediaCitation(source, style);
+      }
+      
+      return {
+        id: source.id,
+        source: source,
+        formatted: citation
+      };
+    })
+  );
+  
+  return formattedCitations;
+}
+
+// Generate research report
+export async function generateResearchReport({ topic, analysis, citations, format, context }) {
+  // Create report structure based on analysis
+  const reportSections = [
+    {
+      title: 'Executive Summary',
+      content: analysis.summary
+    },
+    {
+      title: 'Introduction',
+      content: `This report presents research findings on the topic of "${topic}". ${analysis.introduction}`
+    }
+  ];
+  
+  // Add main content sections based on key themes identified in analysis
+  analysis.themes.forEach(theme => {
+    reportSections.push({
+      title: theme.title,
+      content: theme.content
+    });
+  });
+  
+  // Add conclusions and recommendations
+  reportSections.push({
+    title: 'Conclusions',
+    content: analysis.conclusions
+  });
+  
+  if (analysis.recommendations.length > 0) {
+    reportSections.push({
+      title: 'Recommendations',
+      content: analysis.recommendations.join('\n\n')
+    });
+  }
+  
+  // Add references section
+  reportSections.push({
+    title: 'References',
+    content: citations.map(citation => citation.formatted).join('\n\n')
+  });
+  
+  // Format the report based on requested output format
+  let formattedReport;
+  
+  if (format === 'markdown') {
+    formattedReport = formatMarkdownReport(reportSections);
+  } else if (format === 'html') {
+    formattedReport = formatHtmlReport(reportSections);
+  } else if (format === 'pdf') {
+    formattedReport = await generatePdfReport(reportSections, context);
+  } else {
+    // Default to markdown
+    formattedReport = formatMarkdownReport(reportSections);
+  }
+  
+  return formattedReport;
+}
+
+// Email research findings
+export async function emailResearchFindings({ research, recipient, context }) {
+  const emailContent = await context.ai.generateEmailSummary({
+    research,
+    recipient
+  });
+  
+  await context.tools.email.send({
+    to: recipient.email,
+    subject: `Research Summary: ${research.title}`,
+    body: emailContent,
+    attachments: research.format === 'pdf' ? [{ name: 'research-report.pdf', content: research.content }] : []
+  });
+  
+  return {
+    status: 'sent',
+    recipient: recipient.email,
+    timestamp: new Date().toISOString()
+  };
+}
+```
+
+## Agent UI
+
+```jsx
+import React, { useState } from 'react';
+import { Card, Progress, Tabs, Tag, SearchResults, Citation } from '@/components/ui';
+
+export function AgentUI({ agent, state, onAction }) {
+  const [sourceFilter, setSourceFilter] = useState('all');
+  
+  return (
+    <div className="agent-container">
+      <Card className="agent-card">
+        <div className="agent-header">
+          <h2>{agent.title}</h2>
+          <div className="agent-status">
+            <span className={`status-indicator ${state.status || 'idle'}`}></span>
+            <span className="status-text">{state.status || 'idle'}</span>
+          </div>
+        </div>
+        
+        {state.topic && (
+          <div className="current-topic">
+            <h3>Researching: {state.topic}</h3>
+            {state.progress !== undefined && state.progress < 100 && (
+              <Progress value={state.progress} max={100} />
+            )}
+          </div>
+        )}
+        
+        <Tabs defaultValue="sources">
+          <Tabs.List>
+            <Tabs.Trigger value="sources">Sources</Tabs.Trigger>
+            <Tabs.Trigger value="findings">Findings</Tabs.Trigger>
+            <Tabs.Trigger value="citations">Citations</Tabs.Trigger>
+          </Tabs.List>
+          
+          <Tabs.Content value="sources">
+            <div className="sources-container">
+              <div className="source-filters">
+                <Tag 
+                  active={sourceFilter === 'all'} 
+                  onClick={() => setSourceFilter('all')}
+                >
+                  All
+                </Tag>
+                <Tag 
+                  active={sourceFilter === 'web'} 
+                  onClick={() => setSourceFilter('web')}
+                >
+                  Web
+                </Tag>
+                <Tag 
+                  active={sourceFilter === 'academic'} 
+                  onClick={() => setSourceFilter('academic')}
+                >
+                  Academic
+                </Tag>
+                <Tag 
+                  active={sourceFilter === 'wikipedia'} 
+                  onClick={() => setSourceFilter('wikipedia')}
+                >
+                  Wikipedia
+                </Tag>
+              </div>
+              
+              <SearchResults 
+                results={state.sources?.filter(s => sourceFilter === 'all' || s.type === sourceFilter) || []}
+                renderItem={(item) => (
+                  <div className="source-item">
+                    <div className="source-title">{item.title}</div>
+                    <div className="source-meta">
+                      <span className="source-type">{item.type}</span>
+                      {item.date && <span className="source-date">{item.date}</span>}
+                      {item.author && <span className="source-author">{item.author}</span>}
+                    </div>
+                    <div className="source-snippet">{item.snippet}</div>
+                  </div>
+                )}
+              />
+            </div>
+          </Tabs.Content>
+          
+          <Tabs.Content value="findings">
+            <div className="findings-content">
+              {state.report ? (
+                <div dangerouslySetInnerHTML={{ __html: state.report.content }} />
+              ) : (
+                <div className="no-findings">No research report generated yet</div>
+              )}
+            </div>
+          </Tabs.Content>
+          
+          <Tabs.Content value="citations">
+            <div className="citations-list">
+              {state.citations ? (
+                state.citations.map((citation, index) => (
+                  <Citation key={index} citation={citation} />
+                ))
+              ) : (
+                <div className="no-citations">No citations generated yet</div>
+              )}
+            </div>
+          </Tabs.Content>
+        </Tabs>
+      </Card>
+    </div>
+  );
+}
+```
