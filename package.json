@@ -37,7 +37,7 @@
   "homepage": "https://github.com/drivly/agentic.md#readme",
   "dependencies": {
     "agents": "^0.0.47",
-    "ai": "^2.2.34",
+    "ai": "^5.0.52",
     "mermaid": "^10.9.0",
     "remark": "^15.0.1",
     "remark-mermaid": "^0.2.0",
